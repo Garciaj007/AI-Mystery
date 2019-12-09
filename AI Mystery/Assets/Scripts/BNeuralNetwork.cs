@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Array = System.Array;
+using Math = System.Math;
 
 public class BNeuralNetwork
 {
     public class Layer
     {
-        private const float LearningRate = 0.00333f;
+        private const float LearningRate = 0.033f;
         private int numberOfInputs;
         private int numberOfOutputs;
 
@@ -31,6 +31,29 @@ public class BNeuralNetwork
             weightsDelta = new float[numberOfOutputs, numberOfInputs];
 
             InitializeWeights();
+        }
+
+        public void InitializeWeights()
+        {
+            for (var i = 0; i < numberOfOutputs; i++)
+                for (var j = 0; j < numberOfInputs; j++)
+                    weights[i, j] = Random.Range(-0.5f, 0.5f);
+        }
+
+        public float[] FeedForward(float[] inputs)
+        {
+            this.inputs = inputs;
+
+            for (var i = 0; i < numberOfOutputs; i++)
+            {
+                outputs[i] = 0;
+
+                for (var j = 0; j < numberOfInputs; j++)
+                    outputs[i] += inputs[j] * weights[i, j];
+
+                outputs[i] = (float)Math.Tanh(outputs[i]);
+            }
+            return outputs;
         }
 
         public float TanHDer(float value)
@@ -75,33 +98,8 @@ public class BNeuralNetwork
                     weights[i, j] -= weightsDelta[i, j] * LearningRate;
         }
 
-        public void InitializeWeights()
-        {
-            for (var i = 0; i < numberOfOutputs; i++)
-            {
-                for (var j = 0; j < numberOfInputs; j++)
-                {
-                    weights[i, j] = Random.Range(-1.0f, 1.0f);
-                }
-            }
-        }
 
-        public float[] FeedForward(float[] inputs)
-        {
-            this.inputs = inputs;
-
-            for (var i = 0; i < numberOfOutputs; i++)
-            {
-                outputs[i] = 0;
-                for (var j = 0; j < numberOfInputs; j++)
-                {
-                    outputs[i] += inputs[j] * weights[i, j];
-                }
-
-                outputs[i] = Mathf.Max(0, outputs[i]);
-            }
-            return outputs;
-        }
+        
     }
 
     private int[] layerSizes; //layers
@@ -110,7 +108,8 @@ public class BNeuralNetwork
     public BNeuralNetwork(int[] layerSizes)
     {
         this.layerSizes = new int[layerSizes.Length];
-        Array.ConstrainedCopy(layerSizes, 0, this.layerSizes, 0, layerSizes.Length);
+        for(var i = 0; i < layerSizes.Length; i++)
+            this.layerSizes[i] = layerSizes[i];
 
         layers = new Layer[layerSizes.Length - 1];
         for (var i = 0; i < layers.Length; i++)
