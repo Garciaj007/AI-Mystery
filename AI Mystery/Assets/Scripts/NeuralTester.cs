@@ -33,13 +33,13 @@ public class NeuralTester : MonoBehaviour
             bNet.BackProp(new float[]{ 1 });
         }
 
-        Debug.Log(bNet.FeedForward(new float[]{0,0,0})[0]);
-        Debug.Log(bNet.FeedForward(new float[]{0,0,1})[0]);
-        Debug.Log(bNet.FeedForward(new float[]{0,1,0})[0]);
-        Debug.Log(bNet.FeedForward(new float[]{0,1,1})[0]);
-        Debug.Log(bNet.FeedForward(new float[]{1,0,0})[0]);
-        Debug.Log(bNet.FeedForward(new float[]{1,0,1})[0]);
-        Debug.Log(bNet.FeedForward(new float[]{1,1,0})[0]);
-        Debug.Log(bNet.FeedForward(new float[]{1,1,1})[0]);
+        Debug.Log(Mathf.Round(bNet.FeedForward(new float[]{0,0,0})[0]));
+        Debug.Log(Mathf.Round(bNet.FeedForward(new float[]{0,0,1})[0]));
+        Debug.Log(Mathf.Round(bNet.FeedForward(new float[]{0,1,0})[0]));
+        Debug.Log(Mathf.Round(bNet.FeedForward(new float[]{0,1,1})[0]));
+        Debug.Log(Mathf.Round(bNet.FeedForward(new float[]{1,0,0})[0]));
+        Debug.Log(Mathf.Round(bNet.FeedForward(new float[]{1,0,1})[0]));
+        Debug.Log(Mathf.Round(bNet.FeedForward(new float[]{1,1,0})[0]));
+        Debug.Log(Mathf.Round(bNet.FeedForward(new float[]{1,1,1})[0]));
     }
 }

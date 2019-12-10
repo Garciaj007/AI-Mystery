@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &4
 LightmapSettings:
@@ -158,7 +158,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 95a1392a816954c0cb55feb97c5622cb, type: 2}
+  - {fileID: 2100000, guid: fe2df5fc8de24004ebfbf6f8a28c2753, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -344,7 +344,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 92c388ea017ab483e83571bcd0c6a057, type: 2}
+  - {fileID: 2100000, guid: 72549f373b040164da175c5919eb0f51, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -438,7 +438,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b591ccb031932425db472ac13b5baaf5, type: 2}
+  - {fileID: 2100000, guid: f909b36174e8d65478b2b8b0271ee38c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -546,7 +546,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 95a1392a816954c0cb55feb97c5622cb, type: 2}
+  - {fileID: 2100000, guid: fe2df5fc8de24004ebfbf6f8a28c2753, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -639,7 +639,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 95a1392a816954c0cb55feb97c5622cb, type: 2}
+  - {fileID: 2100000, guid: fe2df5fc8de24004ebfbf6f8a28c2753, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -768,7 +768,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 95a1392a816954c0cb55feb97c5622cb, type: 2}
+  - {fileID: 2100000, guid: fe2df5fc8de24004ebfbf6f8a28c2753, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -861,7 +861,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 95a1392a816954c0cb55feb97c5622cb, type: 2}
+  - {fileID: 2100000, guid: fe2df5fc8de24004ebfbf6f8a28c2753, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1023,18 +1023,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1671852227}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 855e868289c1843b09c78e143b2b1288, type: 3}
+  m_Script: {fileID: 11500000, guid: 69adbd9a8b037c44dad72648cc77fa22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unwalkableMask:
-    m_Bits: 256
-  gridWorldSize: {x: 100, y: 100}
-  nodeRadius: 0.5
-  walkableRegions:
-  - terrainMask:
-      m_Bits: 1024
-    terrainPenalty: 5
-  obstacleProximityPenalty: 10
 --- !u!4 &1671852229
 Transform:
   m_ObjectHideFlags: 0
@@ -1058,7 +1049,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1671852227}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceccdd2eca5974089b87e95c761e83d6, type: 3}
+  m_Script: {fileID: 0}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1671852231
@@ -1124,7 +1115,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 95a1392a816954c0cb55feb97c5622cb, type: 2}
+  - {fileID: 2100000, guid: fe2df5fc8de24004ebfbf6f8a28c2753, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1204,7 +1195,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 92c388ea017ab483e83571bcd0c6a057, type: 2}
+  - {fileID: 2100000, guid: f549a472086b12947ac938b39db0fea8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1270,7 +1261,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1968263579}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f405937fb69e244198911aebaac9bf00, type: 3}
+  m_Script: {fileID: 11500000, guid: 27642572d16fdeb49beff4c97c80ffab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 310692853}

@@ -4,17 +4,35 @@ using System.Collections;
 public class Unit : MonoBehaviour {
     
 	public Transform target;
+    public float close;
 	float speed = 20;
 	Vector3[] path;
 	int targetIndex;
 
     //start of entire algorithm
 	void Start() {
-		PathRequestManager.RequestPath(transform.position,target.position, OnPathFound);
+        OnNewPathRequested();
 	}
 
+    void Update()
+    {
+        if (target == null) return;
+        if(Vector3.Distance(transform.position, target.transform.position) < close)
+        {
+            print("close");
+            GetComponent<ChaseAndEvade>().enabled = true;
+            enabled = false;            
+        }
+    }
+
+    public void OnNewPathRequested()
+    {
+        if (target != null)
+            PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+    }
+
     //restarts coroutine
-	public void OnPathFound(Vector3[] newPath, bool pathSuccessful) {
+    public void OnPathFound(Vector3[] newPath, bool pathSuccessful) {
 		if (pathSuccessful) {
 			path = newPath;
 			targetIndex = 0;

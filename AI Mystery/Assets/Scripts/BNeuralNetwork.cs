@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Math = System.Math;
 
 public class BNeuralNetwork
@@ -23,7 +21,7 @@ public class BNeuralNetwork
             this.numberOfInputs = numberOfInputs;
             this.numberOfOutputs = numberOfOutputs;
 
-            error = new float[numberOfInputs];
+            error = new float[numberOfOutputs];
             gamma = new float[numberOfOutputs];
             inputs = new float[numberOfInputs];
             outputs = new float[numberOfOutputs];
@@ -51,7 +49,7 @@ public class BNeuralNetwork
                 for (var j = 0; j < numberOfInputs; j++)
                     outputs[i] += inputs[j] * weights[i, j];
 
-                outputs[i] = (float)Math.Tanh(outputs[i]);
+                outputs[i] = Mathf.Max(0, outputs[i]);
             }
             return outputs;
         }
@@ -97,9 +95,6 @@ public class BNeuralNetwork
                 for (var j = 0; j < numberOfInputs; j++)
                     weights[i, j] -= weightsDelta[i, j] * LearningRate;
         }
-
-
-        
     }
 
     private int[] layerSizes; //layers
@@ -113,7 +108,7 @@ public class BNeuralNetwork
 
         layers = new Layer[layerSizes.Length - 1];
         for (var i = 0; i < layers.Length; i++)
-            layers[i] = new Layer(this.layerSizes[i], this.layerSizes[i + 1]);
+            layers[i] = new Layer(layerSizes[i], layerSizes[i + 1]);
     }
 
     public float[] FeedForward(float[] inputs)
