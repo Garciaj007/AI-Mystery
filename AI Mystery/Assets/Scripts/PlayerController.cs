@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     public float Speed { get => speed; }
     public GameObject ClosestPlayer { get; private set; } = null;
 
+    [SerializeField] private Transform target;
     [SerializeField] private bool isSeeker;
     [SerializeField] private float speed;
     [SerializeField] private float staminaDeflationRate;
@@ -43,6 +44,8 @@ public class PlayerController : MonoBehaviour
             nc.neuralNetwork = new BNeuralNetwork(nc.layerSizes.ToArray());
             neuralCommunicators[i] = nc;
         }
+
+        Train();
     }
 
     public void Train()
@@ -67,12 +70,23 @@ public class PlayerController : MonoBehaviour
                 nc.neuralNetwork.BackProp(new float[] { 0.0f });
             });
         }
+
+        Debug.ClearDeveloperConsole();
+        neuralCommunicators.ForEach((nc) => 
+        {
+        Debug.Log(Mathf.Round(nc.neuralNetwork.FeedForward(new float[]{ 2.0f, Bool2Float(false), Bool2Float(true), Bool2Float(false)})[0]));
+        Debug.Log(Mathf.Round(nc.neuralNetwork.FeedForward(new float[]{Bool2Float(true), Bool2Float(true), Bool2Float(false)})[0]));
+        Debug.Log(Mathf.Round(nc.neuralNetwork.FeedForward(new float[]{Bool2Float(true), Bool2Float(false), Bool2Float(false)})[0]));
+        Debug.Log(Mathf.Round(nc.neuralNetwork.FeedForward(new float[]{5.0f, Bool2Float(false), Bool2Float(false), Bool2Float(false)})[0]));
+        });
     }
 
     private void Update()
     {
-        ClosestPlayer = GameManager.GetClosestPlayer(gameObject);
-        var distance = Vector3.Distance(transform.position, GameManager.GetClosestPlayer(gameObject).transform.position);
+        //ClosestPlayer = GameManager.GetClosestPlayer(gameObject);
+        //var distance = Vector3.Distance(transform.position, GameManager.GetClosestPlayer(gameObject).transform.position);
+
+        var distance = Vector3.Distance(transform.position, target.position);
         float[] inputDataSet = { distance, Bool2Float(IsSeeker), Bool2Float(CanSeeEnemy), Bool2Float(GameManager.IsObjectiveActive) };
         var action = 0;
         neuralCommunicators.ForEach((nc) => { action = Mathf.RoundToInt(nc.neuralNetwork.FeedForward(inputDataSet)[0]); });

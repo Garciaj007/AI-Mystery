@@ -3,27 +3,15 @@ using System.Collections;
 
 public class Unit : MonoBehaviour {
     
-	public Transform target;
-    public float close;
-	float speed = 20;
-	Vector3[] path;
-	int targetIndex;
+	[SerializeField] private Transform target;
+    [SerializeField] private float speed = 20.0f;
+	[SerializeField] private Vector3[] path;
+	[SerializeField] private int targetIndex;
 
     //start of entire algorithm
 	void Start() {
         OnNewPathRequested();
 	}
-
-    void Update()
-    {
-        if (target == null) return;
-        if(Vector3.Distance(transform.position, target.transform.position) < close)
-        {
-            print("close");
-            GetComponent<ChaseAndEvade>().enabled = true;
-            enabled = false;            
-        }
-    }
 
     public void OnNewPathRequested()
     {
@@ -55,24 +43,30 @@ public class Unit : MonoBehaviour {
 			}
 
 			transform.position = Vector3.MoveTowards(transform.position,currentWaypoint,speed * Time.deltaTime);
+            transform.LookAt(currentWaypoint);
 			yield return null;
 
 		}
 	}
 
-	/*public void OnDrawGizmos() {
-		if (path != null) {
-			for (int i = targetIndex; i < path.Length; i ++) {
-				Gizmos.color = Color.black;
-				Gizmos.DrawCube(path[i], Vector3.one);
+    public void OnDrawGizmos()
+    {
+        if (path != null)
+        {
+            for (int i = targetIndex; i < path.Length; i++)
+            {
+                Gizmos.color = Color.black;
+                Gizmos.DrawCube(path[i], Vector3.one);
 
-				if (i == targetIndex) {
-					Gizmos.DrawLine(transform.position, path[i]);
-				}
-				else {
-					Gizmos.DrawLine(path[i-1],path[i]);
-				}
-			}
-		}
-	}*/
+                if (i == targetIndex)
+                {
+                    Gizmos.DrawLine(transform.position, path[i]);
+                }
+                else
+                {
+                    Gizmos.DrawLine(path[i - 1], path[i]);
+                }
+            }
+        }
+    }
 }

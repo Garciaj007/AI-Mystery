@@ -49,7 +49,7 @@ public class BNeuralNetwork
                 for (var j = 0; j < numberOfInputs; j++)
                     outputs[i] += inputs[j] * weights[i, j];
 
-                outputs[i] = Mathf.Max(0, outputs[i]);
+                outputs[i] = (float)Math.Tanh(outputs[i]);
             }
             return outputs;
         }

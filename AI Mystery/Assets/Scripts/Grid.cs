@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Grid : MonoBehaviour {
 
-	//public bool displayGridGizmos;
+	public bool displayGridGizmos;
 
     //layermask is similar to tag given to gameobeject, represents if layer is used
 	public LayerMask unwalkableMask;
@@ -174,19 +174,22 @@ public class Grid : MonoBehaviour {
 		return grid[x,y];
 	}
 
-	/*void OnDrawGizmos() {
-		Gizmos.DrawWireCube(transform.position,new Vector3(gridWorldSize.x,1,gridWorldSize.y));
-		if (grid != null && displayGridGizmos) {
-			foreach (Node n in grid) {
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+        if (grid != null && displayGridGizmos)
+        {
+            foreach (Node n in grid)
+            {
 
-				Gizmos.color = Color.Lerp (Color.white, Color.black, Mathf.InverseLerp (penaltyMin, penaltyMax, n.movementPenalty));
-				Gizmos.color = (n.walkable)?Gizmos.color:Color.red;
-				Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter));
-			}
-		}
-	}*/
+                Gizmos.color = Color.Lerp(Color.white, Color.black, Mathf.InverseLerp(penaltyMin, penaltyMax, n.movementPenalty));
+                Gizmos.color = (n.walkable) ? Gizmos.color : Color.red;
+                Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter));
+            }
+        }
+    }
 
-	[System.Serializable]
+    [System.Serializable]
 	public class TerrainType {
 		public LayerMask terrainMask;
 		public int terrainPenalty;
