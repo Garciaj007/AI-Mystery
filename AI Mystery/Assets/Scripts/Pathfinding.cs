@@ -52,7 +52,7 @@ public class Pathfinding : MonoBehaviour {
                 //if node = finish, we are at the target, return out of function
 				if (currentNode == targetNode) {
 					sw.Stop();
-					print ("Path found: " + sw.ElapsedMilliseconds + " ms");
+					//print ("Path found: " + sw.ElapsedMilliseconds + " ms");
 					pathSuccess = true;
 					break;
 				}

@@ -25,10 +25,11 @@ public class PlayerController : MonoBehaviour
         public BNeuralNetwork neuralNetwork;
     }
 
-    [SerializeField] private Transform chaseEvadeTransform;
-    [SerializeField] private bool isSeeker;
-    [SerializeField] private float speed;
-    [SerializeField] private float staminaDeflationRate;
+    [SerializeField] private Transform chaseEvadeTransform = null;
+    [SerializeField] private bool isSeeker = false;
+    [SerializeField] private bool canSeeEnemy = false;
+    [SerializeField] private float speed = 10.0f;
+    [SerializeField] private float staminaDeflationRate = 0.1f;
     [SerializeField] public List<NeuralCommunicator> neuralCommunicators = new List<NeuralCommunicator>();
 
     private Unit aStarUnit = null;
@@ -36,7 +37,7 @@ public class PlayerController : MonoBehaviour
 
     private Animator animator = null;
     public bool IsSeeker { get => isSeeker; set => isSeeker = value; }
-    public bool CanSeeEnemy { get; set; } = false;
+    public bool CanSeeEnemy { get => canSeeEnemy; }
     public float Stamina { get; private set; } = 1.0f;
     public float Speed { get => speed; }
     public GameObject ClosestPlayer { get; private set; } = null;
@@ -46,15 +47,15 @@ public class PlayerController : MonoBehaviour
     public bool IsMurderer { get; private set; } = false;
     #endregion
 
-    public void SetPlayerSeen(PlayerController otherPlayer, bool isInCollider) => CanSeeEnemy = ((otherPlayer.IsSeeker && !IsSeeker) || (!otherPlayer.IsSeeker && IsSeeker) && isInCollider );
+    public void SetPlayerSeen(PlayerController otherPlayer, bool isInCollider) => canSeeEnemy = ((otherPlayer.IsSeeker && !IsSeeker) || (!otherPlayer.IsSeeker && IsSeeker) && isInCollider );
 
     public void SetPlayerRole(bool isSeeker)
     {
         IsSeeker = isSeeker;
         if (IsSeeker)
-            GetComponent<MeshRenderer>().material.color = Color.red;
+            GetComponentInChildren<MeshRenderer>().material.color = Color.red;
         else
-            GetComponent<MeshRenderer>().material.color = Color.blue;
+            GetComponentInChildren<MeshRenderer>().material.color = Color.blue;
     }
 
     private void Start()
@@ -103,7 +104,10 @@ public class PlayerController : MonoBehaviour
         var action = 0.0f;
 
         if (CanSeeEnemy)
-            distance = Vector3.Distance(transform.position, GameManager.GetClosestPlayer(gameObject).transform.position);
+        {
+            UpdateClosestPlayer();
+            distance = Vector3.Distance(transform.position, ClosestPlayer.transform.position);
+        }
 
         var inputDataSet = new float[] { Utils.Mathf.Bool2Float(IsSeeker), Utils.Mathf.Bool2Float(CanSeeEnemy), Utils.Mathf.Bool2Float(GameManager.Instance.IsObjectiveActive) };
 
@@ -114,13 +118,13 @@ public class PlayerController : MonoBehaviour
         }
         Debug.Log(inputDebugString);
 
-        neuralCommunicators.ForEach((nc) => { action = Mathf.RoundToInt(nc.neuralNetwork.FeedForward(inputDataSet)[0]); });
+        neuralCommunicators.ForEach((nc) => { action = nc.neuralNetwork.FeedForward(inputDataSet)[0]; });
         animator.SetFloat("Action", action);
     }
 
     public void Kill() => IsDead = true;
     public void SetMurder(bool isMurderer) => IsMurderer = isMurderer;
-
+    public void UpdateClosestPlayer() => ClosestPlayer = GameManager.GetClosestPlayer(gameObject);
     public void UseStamina()
     {
         Stamina -= staminaDeflationRate;

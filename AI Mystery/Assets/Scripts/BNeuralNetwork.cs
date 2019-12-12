@@ -5,7 +5,7 @@ public class BNeuralNetwork
 {
     public class Layer
     {
-        private const float LearningRate = 0.033f;
+        private const float LearningRate = 0.33f;
         private int numberOfInputs;
         private int numberOfOutputs;
 

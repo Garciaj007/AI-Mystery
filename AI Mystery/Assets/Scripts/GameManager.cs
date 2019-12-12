@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 [CustomEditor(typeof(GameManager))]
 public class GameManagerEditor : Editor
@@ -11,10 +12,14 @@ public class GameManagerEditor : Editor
 
         GUILayout.Space(10f);
 
-        if(GUILayout.Button("Train Neural Network") && Application.isPlaying && Application.isEditor)
-        {
+        if (GUILayout.Button("Train Neural Network") && Application.isPlaying && Application.isEditor)
             GameManager.Instance.Train();
-        }
+
+        if (GUILayout.Button("Begin Simulation") && Application.isPlaying && Application.isEditor)
+            GameManager.Instance.BeginSimulation();
+
+        if (GUILayout.Button("Restart Simulation") && Application.isPlaying && Application.isEditor)
+            GameManager.Instance.ResetSimulation();
     }
 }
 
@@ -25,18 +30,24 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private List<Transform> randomPoints = new List<Transform>();
     [SerializeField] private GameObject objectivePrefab = null;
-    
+
     private GameObject objective = null;
 
-    public bool IsObjectiveActive { get; private set; }
+    public bool IsObjectiveActive { get; private set; } = false;
     public List<Transform> RandomPoints { get => randomPoints; }
 
 
     public void Train()
     {
-        foreach (var player in players)
-            player.GetComponent<PlayerController>().Train();
+        foreach (var player in players) player.GetComponent<PlayerController>().Train();
     }
+
+    public void BeginSimulation()
+    {
+        foreach (var player in players) player.GetComponent<Animator>().SetTrigger("Simulate");
+    }
+
+    public void ResetSimulation() => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
     public static GameObject GetClosestPlayer(GameObject currentPlayer)
     {
@@ -67,15 +78,14 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         players = GameObject.FindGameObjectsWithTag("Player");
+        AssignRoles();
     }
 
     private void AssignRoles()
     {
-        foreach(var player in players)
-        {
-            var rand = Random.Range(0, 5) % 2 == 0;
-            player.GetComponent<PlayerController>().SetPlayerRole(rand);
-        }
+        var rand = Random.Range(0, players.Length);
+        for (var i = 0; i < players.Length; i++)
+            players[i].GetComponent<PlayerController>().SetPlayerRole(rand == i);
     }
 
     public void SpawnObjective()

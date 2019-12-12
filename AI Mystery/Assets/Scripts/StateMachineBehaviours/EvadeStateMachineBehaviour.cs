@@ -1,18 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EvadeStateMachineBehaviour : StateMachineBehaviour
 {
+    ChaseAndEvade chaseEvadeRef = null;
+    GameObject closestPlayer = null;
+
     public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
     {
-        //var closestPlayer = animator.GetComponent<PlayerController>().ClosestPlayer;
-        //if (closestPlayer == null) return;
-        //var desired = closestPlayer.transform.position - animator.transform.position;
-        //desired = desired.normalized * animator.GetComponent<PlayerController>().Speed;
-        //animator.GetComponent<Rigidbody>().AddForce(desired);
+        animator.GetComponent<Unit>().StopAllFollowingPath();
+        chaseEvadeRef = animator.GetComponent<ChaseAndEvade>();
+        closestPlayer = animator.GetComponent<PlayerController>().ClosestPlayer;
+        chaseEvadeRef.chase = false;
+    }
 
-        animator.GetComponent<Unit>().StopFollowingPath();
-        var chaseAndEvadeRef = animator.GetComponent<ChaseAndEvade>();
+    public override void OnStateUpdate(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
+    {
+        if (closestPlayer == null) return;
+        chaseEvadeRef.target = closestPlayer.transform;
+    }
+
+    public override void OnStateExit(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
+    {
+        chaseEvadeRef.target = null;
+        chaseEvadeRef.chase = false;
     }
 }

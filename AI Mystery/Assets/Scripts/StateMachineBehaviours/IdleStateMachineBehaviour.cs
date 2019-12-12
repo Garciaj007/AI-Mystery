@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class IdleStateMachineBehaviour : StateMachineBehaviour
 {
@@ -10,20 +8,22 @@ public class IdleStateMachineBehaviour : StateMachineBehaviour
     public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
     {
         aStarUnit = animator.GetComponent<Unit>();
-        aStarUnit.onFinishedPathFollowing += FindNewRandomPoint;
-        FindNewRandomPoint();
+        aStarUnit.OnFinishedPathFollowing += FindNewRandomPoint;
+        aStarUnit.StopFollowingPath();
+        aStarUnit.SetNewTarget(GetRandomPoint(null));
         aStarUnit.OnNewPathRequested();
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-
-        aStarUnit.onFinishedPathFollowing -= FindNewRandomPoint;
+        aStarUnit.OnFinishedPathFollowing -= FindNewRandomPoint;
     }
 
     private void FindNewRandomPoint()
     {
-        aStarUnit.SetNewTarget(GetRandomPoint(null));
+        aStarUnit.StopFollowingPath();
+        aStarUnit.SetNewTarget(GetRandomPoint(aStarUnit.Target));
+        aStarUnit.OnNewPathRequested();
     }
 
     private Transform GetRandomPoint(Transform currentTarget)

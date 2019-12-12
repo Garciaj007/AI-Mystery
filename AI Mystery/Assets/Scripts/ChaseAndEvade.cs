@@ -9,9 +9,9 @@ public class ChaseAndEvade : MonoBehaviour
 
     public void SetTarget(Transform target_) => target = target_;
 
-    // Update is called once per frame
     void Update()
     {
+        #region Chase & Evade Based On Distance
         //if (player == null) return;
         //float dt = Time.deltaTime;
         //timer -= dt;
@@ -94,24 +94,27 @@ public class ChaseAndEvade : MonoBehaviour
         //{
         //    timer = pauseTime;
         //}
+        #endregion
 
         if (target == null) return;
 
-        if(chase)
-        {
-            var desired = target.position - transform.position;
-
-            if (desired.magnitude > arrivalRadius)
-            {
-                //Do Change to Seeker Logic
-
-            }
-
-            transform.position += desired * maxSpeed * Time.deltaTime;
-        } else
+        if (chase)
         {
             var desired = transform.position - target.position;
-            transform.position += desired * maxSpeed;
+
+            if (desired.magnitude < arrivalRadius)
+            {
+                target.gameObject.GetComponent<PlayerController>().SetPlayerRole(true);
+            }
+            else
+            {
+                transform.position += -desired.normalized * maxSpeed * Time.deltaTime;
+            }
+        }
+        else
+        {
+            var desired = target.position - transform.position;
+            transform.position += desired.normalized * maxSpeed * Time.deltaTime;
         }
     }
 }
