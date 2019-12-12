@@ -27,6 +27,8 @@ public static class Utils
         {
             return (value - inMin) / (inMax - inMin) * (outMax - outMin) + outMin;
         }
+
+        public static float Bool2Float(bool boolean) => boolean ? 1 : 0;
     }
 }
 public static class VectorExtensions

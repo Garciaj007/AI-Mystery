@@ -11,10 +11,9 @@ public class GameManagerEditor : Editor
 
         GUILayout.Space(10f);
 
-        if(GUILayout.Button("Train Neural Network"))
+        if(GUILayout.Button("Train Neural Network") && Application.isPlaying && Application.isEditor)
         {
-            foreach (var player in GameManager.players)
-                player?.GetComponent<PlayerController>()?.Train();
+            GameManager.Instance.Train();
         }
     }
 }
@@ -22,21 +21,25 @@ public class GameManagerEditor : Editor
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public static bool IsObjectiveActive { get; set; }
     public static GameObject[] players = null;
-    private static GameObject[] hiders = null;
-    private static GameObject[] seekers = null;
-    private static GameObject objective = null;
 
-    [SerializeField] private List<Transform> spawnPoints;
-    [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private GameObject objectivePrefab; 
-    [SerializeField] private int NumberOfPlayersToSpawn = 10;
+    [SerializeField] private List<Transform> randomPoints = new List<Transform>();
+    [SerializeField] private GameObject objectivePrefab = null;
+    
+    private GameObject objective = null;
+
+    public bool IsObjectiveActive { get; private set; }
+    public List<Transform> RandomPoints { get => randomPoints; }
+
+
+    public void Train()
+    {
+        foreach (var player in players)
+            player.GetComponent<PlayerController>().Train();
+    }
 
     public static GameObject GetClosestPlayer(GameObject currentPlayer)
     {
-        if (hiders == null || currentPlayer == null) return null;
-
         var closestPlayer = players[0];
         foreach (var player in players)
         {
@@ -63,16 +66,27 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        hiders = GameObject.FindGameObjectsWithTag("Hiders");
-        seekers = GameObject.FindGameObjectsWithTag("Seekers");
-        players = new GameObject[hiders.Length + seekers.Length];
-        hiders.CopyTo(players, 0);
-        seekers.CopyTo(players, hiders.Length);
+        players = GameObject.FindGameObjectsWithTag("Player");
+    }
+
+    private void AssignRoles()
+    {
+        foreach(var player in players)
+        {
+            var rand = Random.Range(0, 5) % 2 == 0;
+            player.GetComponent<PlayerController>().SetPlayerRole(rand);
+        }
     }
 
     public void SpawnObjective()
     {
-        var rand = Random.Range(0, spawnPoints.Count);
-        objectivePrefab = Instantiate(objectivePrefab, spawnPoints[rand].transform.position, Quaternion.identity);
+        var rand = Random.Range(0, randomPoints.Count);
+        objectivePrefab = Instantiate(objectivePrefab, randomPoints[rand].transform.position, Quaternion.identity);
+    }
+
+    public void HideObjective()
+    {
+        IsObjectiveActive = false;
+        objective = null;
     }
 }

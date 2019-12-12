@@ -9,31 +9,53 @@ public class PlayerController : MonoBehaviour
 {
     [System.Serializable]
 
-    struct NeuralCommunicator
+    public struct NeuralCommunicator
     {
+        [System.Serializable]
+        public struct NeuralDataset
+        {
+            public float[] expectedInputDataset;
+            public float[] expectedOutputDataset;
+        }
+
         public string name;
-        public BNeuralNetwork neuralNetwork;
+        public int trainingIterations;
         public List<int> layerSizes;
+        public List<NeuralDataset> neuralDatasets;
+        public BNeuralNetwork neuralNetwork;
     }
 
+    [SerializeField] private Transform chaseEvadeTransform;
+    [SerializeField] private bool isSeeker;
+    [SerializeField] private float speed;
+    [SerializeField] private float staminaDeflationRate;
+    [SerializeField] public List<NeuralCommunicator> neuralCommunicators = new List<NeuralCommunicator>();
 
+    private Unit aStarUnit = null;
+    private ChaseAndEvade chaseAndEvade = null;
+
+    private Animator animator = null;
     public bool IsSeeker { get => isSeeker; set => isSeeker = value; }
     public bool CanSeeEnemy { get; set; } = false;
-
-    public bool IsDead { get; private set; }
-    public bool IsMurderer { get; private set; } = false;
-
     public float Stamina { get; private set; } = 1.0f;
     public float Speed { get => speed; }
     public GameObject ClosestPlayer { get; private set; } = null;
 
-    [SerializeField] private Transform target;
-    [SerializeField] private bool isSeeker;
-    [SerializeField] private float speed;
-    [SerializeField] private float staminaDeflationRate;
-    [SerializeField] private List<NeuralCommunicator> neuralCommunicators = new List<NeuralCommunicator>();
+    #region Murder Mystery Deprecated Props
+    public bool IsDead { get; private set; }
+    public bool IsMurderer { get; private set; } = false;
+    #endregion
 
-    private Animator animator = null;
+    public void SetPlayerSeen(PlayerController otherPlayer, bool isInCollider) => CanSeeEnemy = ((otherPlayer.IsSeeker && !IsSeeker) || (!otherPlayer.IsSeeker && IsSeeker) && isInCollider );
+
+    public void SetPlayerRole(bool isSeeker)
+    {
+        IsSeeker = isSeeker;
+        if (IsSeeker)
+            GetComponent<MeshRenderer>().material.color = Color.red;
+        else
+            GetComponent<MeshRenderer>().material.color = Color.blue;
+    }
 
     private void Start()
     {
@@ -44,59 +66,60 @@ public class PlayerController : MonoBehaviour
             nc.neuralNetwork = new BNeuralNetwork(nc.layerSizes.ToArray());
             neuralCommunicators[i] = nc;
         }
-
-        Train();
     }
 
     public void Train()
     {
-        for (int i = 0; i < 500; i++)
+        neuralCommunicators.ForEach((nc) =>
         {
-            neuralCommunicators.ForEach((nc) =>
+            for (int i = 0; i < nc.trainingIterations; i++)
             {
-                nc.neuralNetwork.FeedForward(new float[] { 2.0f, Bool2Float(false), Bool2Float(true), Bool2Float(false) });
-                nc.neuralNetwork.BackProp(new float[] {2.0f});
-
-                nc.neuralNetwork.FeedForward(new float[] { 2.0f, Bool2Float(true), Bool2Float(true), Bool2Float(false) });
-                nc.neuralNetwork.BackProp(new float[] { 1.0f });
-
-                //nc.neuralNetwork.FeedForward(new float[] { 3.0f, Bool2Float(false), Bool2Float(false), Bool2Float(true) });
-                //nc.neuralNetwork.BackProp(new float[] { 3.0f });
-
-                nc.neuralNetwork.FeedForward(new float[] { 5.0f, Bool2Float(true), Bool2Float(false), Bool2Float(false) });
-                nc.neuralNetwork.BackProp(new float[] { 0.0f });
-
-                nc.neuralNetwork.FeedForward(new float[] { 5.0f, Bool2Float(false), Bool2Float(false), Bool2Float(false) });
-                nc.neuralNetwork.BackProp(new float[] { 0.0f });
-            });
-        }
+                nc.neuralDatasets.ForEach((data) =>
+                {
+                    nc.neuralNetwork.FeedForward(data.expectedInputDataset);
+                    nc.neuralNetwork.BackProp(data.expectedOutputDataset);
+                });
+            }
+        });
 
         Debug.ClearDeveloperConsole();
-        neuralCommunicators.ForEach((nc) => 
+        neuralCommunicators.ForEach((nc) =>
         {
-        Debug.Log(Mathf.Round(nc.neuralNetwork.FeedForward(new float[]{ 2.0f, Bool2Float(false), Bool2Float(true), Bool2Float(false)})[0]));
-        Debug.Log(Mathf.Round(nc.neuralNetwork.FeedForward(new float[]{Bool2Float(true), Bool2Float(true), Bool2Float(false)})[0]));
-        Debug.Log(Mathf.Round(nc.neuralNetwork.FeedForward(new float[]{Bool2Float(true), Bool2Float(false), Bool2Float(false)})[0]));
-        Debug.Log(Mathf.Round(nc.neuralNetwork.FeedForward(new float[]{5.0f, Bool2Float(false), Bool2Float(false), Bool2Float(false)})[0]));
+        Debug.Log($"------------------ { nc.name } ------------------");
+            nc.neuralDatasets.ForEach((data) =>
+            {
+                var output = nc.neuralNetwork.FeedForward(data.expectedInputDataset);
+                var debugString = "OutputValues: ";
+                foreach (var val in output)
+                    debugString += val.ToString();
+                Debug.Log(debugString);
+            });
         });
     }
 
     private void Update()
     {
-        //ClosestPlayer = GameManager.GetClosestPlayer(gameObject);
-        //var distance = Vector3.Distance(transform.position, GameManager.GetClosestPlayer(gameObject).transform.position);
+        var distance = -1.0f;
+        var action = 0.0f;
 
-        var distance = Vector3.Distance(transform.position, target.position);
-        float[] inputDataSet = { distance, Bool2Float(IsSeeker), Bool2Float(CanSeeEnemy), Bool2Float(GameManager.IsObjectiveActive) };
-        var action = 0;
+        if (CanSeeEnemy)
+            distance = Vector3.Distance(transform.position, GameManager.GetClosestPlayer(gameObject).transform.position);
+
+        var inputDataSet = new float[] { Utils.Mathf.Bool2Float(IsSeeker), Utils.Mathf.Bool2Float(CanSeeEnemy), Utils.Mathf.Bool2Float(GameManager.Instance.IsObjectiveActive) };
+
+        var inputDebugString = "Input Values: ";
+        foreach(var data in inputDataSet)
+        {
+            inputDebugString += data.ToString();
+        }
+        Debug.Log(inputDebugString);
+
         neuralCommunicators.ForEach((nc) => { action = Mathf.RoundToInt(nc.neuralNetwork.FeedForward(inputDataSet)[0]); });
-        animator.SetInteger("Action", action);
+        animator.SetFloat("Action", action);
     }
 
     public void Kill() => IsDead = true;
     public void SetMurder(bool isMurderer) => IsMurderer = isMurderer;
-
-    public static float Bool2Float(bool boolean) => boolean ? 1 : 0;
 
     public void UseStamina()
     {
