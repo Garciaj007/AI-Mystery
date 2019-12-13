@@ -20,6 +20,10 @@ public class GameManagerEditor : Editor
 
         if (GUILayout.Button("Restart Simulation") && Application.isPlaying && Application.isEditor)
             GameManager.Instance.ResetSimulation();
+
+        if (GUILayout.Button("Spawn Objective") && Application.isPlaying && Application.isEditor)
+            GameManager.Instance.SpawnObjective();
+
     }
 }
 
@@ -33,7 +37,7 @@ public class GameManager : MonoBehaviour
 
     private GameObject objective = null;
 
-    public bool IsObjectiveActive { get; private set; } = false;
+    public bool IsObjectiveActive { get => objective != null; }
     public List<Transform> RandomPoints { get => randomPoints; }
 
 
@@ -90,13 +94,13 @@ public class GameManager : MonoBehaviour
 
     public void SpawnObjective()
     {
+        if (objective != null) return;
         var rand = Random.Range(0, randomPoints.Count);
         objectivePrefab = Instantiate(objectivePrefab, randomPoints[rand].transform.position, Quaternion.identity);
     }
 
     public void HideObjective()
     {
-        IsObjectiveActive = false;
         objective = null;
     }
 }
